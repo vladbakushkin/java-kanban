@@ -1,31 +1,30 @@
+package manager;
+
+import task.Subtask;
+import task.Task;
+import task.Epic;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class Manager {
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Epic> epics;
-    private final HashMap<Integer, Subtask> subtasks;
-    private int uid;
+    private final HashMap<Integer, Task> tasks = new HashMap<>();
+    private final HashMap<Integer, Epic> epics = new HashMap<>();
+    private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private int uid = 0;
 
-    public Manager() {
-        tasks = new HashMap<>();
-        epics = new HashMap<>();
-        subtasks = new HashMap<>();
-        uid = 0;
+    public ArrayList<Task> getTasks() {
+        return new ArrayList<>(tasks.values());
     }
 
-    public HashMap<Integer, Task> getTasks() {
-        return tasks;
+    public ArrayList<Epic> getEpics() {
+        return new ArrayList<>(epics.values());
     }
 
-    public HashMap<Integer, Epic> getEpics() {
-        return epics;
-    }
-
-    public HashMap<Integer, Subtask> getSubtasks() {
-        return subtasks;
+    public ArrayList<Subtask> getSubtasks() {
+        return new ArrayList<>(subtasks.values());
     }
 
     public void deleteTasks() {
@@ -40,6 +39,7 @@ public class Manager {
     public void deleteSubtasks() {
         subtasks.clear();
         for (Map.Entry<Integer, Epic> epic : epics.entrySet()) {
+            epic.getValue().clearSubtasksId();
             epic.getValue().setStatus("NEW");
         }
     }
@@ -81,7 +81,7 @@ public class Manager {
         subtask.setId(id);
         subtasks.put(id, subtask);
 
-        epic.getSubtasksId().add(id);
+        epic.addSubtaskId(id);
         updateEpicStatus(epic);
 
         return id;
@@ -119,9 +119,10 @@ public class Manager {
     }
 
     public void deleteSubtask(int subtaskId) {
-        Epic epic = epics.get(subtasks.get(subtaskId).getEpicId());    // Получение эпика, соотв. сабтаске
-        epic.getSubtasksId().remove((Integer) subtaskId);              // Удаление сабтаски из списка сабтасков в эпике
+        Epic epic = epics.get(subtasks.get(subtaskId).getEpicId());
+        epic.removeSubtaskId(subtaskId);
         subtasks.remove(subtaskId);
+        updateEpicStatus(epic);
     }
 
     public ArrayList<Subtask> getSubtasksFromEpic(int epicId) {
@@ -147,20 +148,29 @@ public class Manager {
             epic.setStatus("NEW");
         }
 
+        int countNew = 0;
+        int countDone = 0;
         for (String status : statuses) {
             if (status.equals("NEW")) {
-                epic.setStatus("NEW");
-            } else if (status.equals("DONE")) {
-                epic.setStatus("DONE");
-            } else {
-                epic.setStatus("IN_PROGRESS");
+                countNew++;
             }
+            if (status.equals("DONE")) {
+                countDone++;
+            }
+        }
+
+        if (countNew == statuses.size()) {
+            epic.setStatus("NEW");
+        } else if (countDone == statuses.size()) {
+            epic.setStatus("DONE");
+        } else {
+            epic.setStatus("IN_PROGRESS");
         }
     }
 
     @Override
     public String toString() {
-        return "Manager{" +
+        return "ru.yandex.practicum.manager.Manager{" +
                 "tasks=" + tasks +
                 ", epicTasks=" + epics +
                 ", subTasks=" + subtasks +

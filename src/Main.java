@@ -1,3 +1,8 @@
+import manager.Manager;
+import task.Task;
+import task.Epic;
+import task.Subtask;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
@@ -35,11 +40,12 @@ public class Main {
         subtask3.setStatus("DONE");
 
         // распечатать измененные списки задач
+        System.out.println(manager.getEpic(3));
         System.out.println(manager.getEpic(6));
 
         // удалить задачу
         manager.deleteTask(1);
-        System.out.println("Задача с id = 1: "+ manager.getTask(1));
+        System.out.println("Задача с id = 1: " + manager.getTask(1));
 
         // удалить эпик
         manager.deleteEpic(6);
