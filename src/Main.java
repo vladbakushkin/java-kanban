@@ -1,6 +1,4 @@
-import manager.HistoryManager;
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
+import manager.*;
 import task.Epic;
 import task.Subtask;
 import task.Task;
@@ -9,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault();
 
         // создать две задачи
         Task task1 = new Task("Переезд", "Собрать коробки", "NEW");
