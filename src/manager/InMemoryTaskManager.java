@@ -3,6 +3,7 @@ package manager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
+import task.TaskStatus;
 
 import java.util.*;
 
@@ -45,7 +46,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
         for (Map.Entry<Integer, Epic> epic : epics.entrySet()) {
             epic.getValue().clearSubtasksId();
-            epic.getValue().setStatus("NEW");
+            epic.getValue().setStatus(TaskStatus.NEW);
         }
     }
 
@@ -165,7 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void updateEpicStatus(Epic epic) {
-        ArrayList<String> statuses = new ArrayList<>();
+        ArrayList<TaskStatus> statuses = new ArrayList<>();
 
         for (Subtask subtask : subtasks.values()) {
             if (subtask.getEpicId() == epic.getId()) {
@@ -174,26 +175,26 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         if (statuses.isEmpty()) {
-            epic.setStatus("NEW");
+            epic.setStatus(TaskStatus.NEW);
         }
 
         int countNew = 0;
         int countDone = 0;
-        for (String status : statuses) {
-            if (status.equals("NEW")) {
+        for (TaskStatus status : statuses) {
+            if (status.equals(TaskStatus.NEW)) {
                 countNew++;
             }
-            if (status.equals("DONE")) {
+            if (status.equals(TaskStatus.DONE)) {
                 countDone++;
             }
         }
 
         if (countNew == statuses.size()) {
-            epic.setStatus("NEW");
+            epic.setStatus(TaskStatus.NEW);
         } else if (countDone == statuses.size()) {
-            epic.setStatus("DONE");
+            epic.setStatus(TaskStatus.DONE);
         } else {
-            epic.setStatus("IN_PROGRESS");
+            epic.setStatus(TaskStatus.IN_PROGRESS);
         }
     }
 

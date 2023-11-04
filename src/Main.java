@@ -2,6 +2,7 @@ import manager.*;
 import task.Epic;
 import task.Subtask;
 import task.Task;
+import task.TaskStatus;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,25 +11,25 @@ public class Main {
         TaskManager taskManager = Managers.getDefault();
 
         // создать две задачи
-        Task task1 = new Task("Переезд", "Собрать коробки", "NEW");
-        Task task2 = new Task("Переезд", "Упаковать кошку", "IN_PROGRESS");
+        Task task1 = new Task("Переезд", "Собрать коробки", TaskStatus.NEW);
+        Task task2 = new Task("Переезд", "Упаковать кошку", TaskStatus.IN_PROGRESS);
         taskManager.createTask(task1);                                                                            // id = 1
         taskManager.createTask(task2);                                                                            // id = 2
 
         // создать один эпик с двумя подзадачами
-        Epic epic1 = new Epic("Важный эпик 1", "Описание_эпика_1", "NEW");
+        Epic epic1 = new Epic("Важный эпик 1", "Описание_эпика_1", TaskStatus.NEW);
         Subtask subtask1 = new Subtask("Подзадача1_эпика_1", "Описание_подзадачи1_эпика1",
-                "NEW", 3);
+                TaskStatus.NEW, 3);
         Subtask subtask2 = new Subtask("Подзадача2_эпика_1", "Описание_подзадачи2_эпика_1",
-                "NEW", 3);
+                TaskStatus.NEW, 3);
         taskManager.createEpic(epic1);                                                                            // id = 3
         taskManager.createSubtask(subtask1);                                                                      // id = 4
         taskManager.createSubtask(subtask2);                                                                      // id = 5
 
         // создать один эпик с одной подзадачей
-        Epic epic2 = new Epic("Важный эпик 2", "Описание_эпика_2", "NEW");
+        Epic epic2 = new Epic("Важный эпик 2", "Описание_эпика_2", TaskStatus.NEW);
         Subtask subtask3 = new Subtask("Подзадача1_эпика_2", "Описание_подзадачи1_эпика_2",
-                "IN_PROGRESS", 6);
+                TaskStatus.IN_PROGRESS, 6);
         taskManager.createEpic(epic2);                                                                            // id = 6
         taskManager.createSubtask(subtask3);                                                                      // id = 7
 
@@ -36,7 +37,7 @@ public class Main {
         System.out.println(taskManager);
 
         // изменить статусы созданных объектов
-        subtask3.setStatus("DONE");
+        subtask3.setStatus(TaskStatus.DONE);
 
         // распечатать измененные списки задач
         System.out.println(taskManager.getEpic(3));
