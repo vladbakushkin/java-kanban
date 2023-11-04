@@ -1,14 +1,15 @@
+import manager.HistoryManager;
+import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
-import manager.TaskManager;
-import task.Task;
 import task.Epic;
 import task.Subtask;
+import task.Task;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        TaskManager taskManager = new InMemoryTaskManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
         // создать две задачи
         Task task1 = new Task("Переезд", "Собрать коробки", "NEW");
@@ -35,7 +36,6 @@ public class Main {
 
         // Распечатайте списки эпиков, задач и подзадач, через System.out.println(..)
         System.out.println(taskManager);
-        System.out.println(taskManager.getTask(1));
 
         // изменить статусы созданных объектов
         subtask3.setStatus("DONE");
@@ -46,12 +46,13 @@ public class Main {
 
         // удалить задачу
         taskManager.deleteTask(1);
-        System.out.println("Задача с id = 1: " + taskManager.getTask(1));
 
         // удалить эпик
         taskManager.deleteEpic(6);
-        System.out.println("Эпик с id = 6: " + taskManager.getEpic(6));
 
         System.out.println(taskManager);
+
+        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.getHistory().size());
     }
 }
