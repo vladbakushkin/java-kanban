@@ -36,9 +36,9 @@ public class Epic extends Task {
                 ", ID=" + super.getId() +
                 ", status='" + super.getStatus() + '\'';
         if (subtasksId != null) {
-            result += ", quantity subtasks=" + subtasksId.size() + "}";
+            result += ", QTY ST=" + subtasksId.size() + "}";
         } else {
-            result += ", quantity subtasks=0}";
+            result += ", QTY ST=0}";
         }
         return result;
     }
