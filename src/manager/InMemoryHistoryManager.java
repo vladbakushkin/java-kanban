@@ -2,10 +2,7 @@ package manager;
 
 import task.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
@@ -41,13 +38,13 @@ public class InMemoryHistoryManager implements HistoryManager {
      * @param task объект задачи
      */
     private void linkLast(Task task) {
-        Node l = last;
+        Node prevLast = last;
         Node newNode = new Node(last, task, null);
         last = newNode;
-        if (l == null) {
+        if (prevLast == null) {
             first = newNode;
         } else {
-            l.next = newNode;
+            prevLast.next = newNode;
         }
         nodeMap.put(task.getId(), newNode);
     }
@@ -55,10 +52,10 @@ public class InMemoryHistoryManager implements HistoryManager {
     /**
      * Собирает все задачи из CustomLinkedList в обычный ArrayList
      *
-     * @return список задач в виде ArrayList
+     * @return список задач в виде LinkedList
      */
-    ArrayList<Task> getTasks() {
-        ArrayList<Task> tasks = new ArrayList<>();
+    LinkedList<Task> getTasks() {
+        LinkedList<Task> tasks = new LinkedList<>();
         Node node = first;
 
         while (node != null) {
@@ -77,26 +74,22 @@ public class InMemoryHistoryManager implements HistoryManager {
             first = next;
         } else {
             prev.next = next;
-            node.prev = null;
         }
 
         if (next == null) {
             last = prev;
         } else {
             next.prev = prev;
-            node.next = null;
         }
-
-        node.task = null;
     }
 
-    private class Node {
+    private final static class Node {
 
-        Task task;
+        private final Task task;
 
-        Node prev;
+        private Node prev;
 
-        Node next;
+        private Node next;
 
         public Node(Node prev, Task task, Node next) {
             this.prev = prev;
