@@ -200,6 +200,10 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    protected HistoryManager getHistoryManager() {
+        return historyManager;
+    }
+
     @Override
     public String toString() {
         return "ru.yandex.practicum.manager.Manager{" +
