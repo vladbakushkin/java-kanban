@@ -57,7 +57,7 @@ public class InMemoryHistoryManager implements HistoryManager {
      *
      * @return список задач в виде LinkedList
      */
-    LinkedList<Task> getTasks() {
+    private LinkedList<Task> getTasks() {
         LinkedList<Task> tasks = new LinkedList<>();
         Node node = first;
 
