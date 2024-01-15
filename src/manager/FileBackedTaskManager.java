@@ -206,15 +206,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void addTask(Task task) {
-        int id = task.getId();
-        task.setId(id);
-        tasks.put(id, task);
+        if (uid < task.getId()) {
+            uid = task.getId();
+        }
+        final int taskId = uid;
+        task.setId(taskId);
+        tasks.put(taskId, task);
     }
 
     private void addEpic(Epic epic) {
-        int id = epic.getId();
-        epic.setId(id);
-        epics.put(id, epic);
+        if (uid < epic.getId()) {
+            uid = epic.getId();
+        }
+        final int epicId = uid;
+        epic.setId(epicId);
+        epics.put(epicId, epic);
     }
 
     private void addSubtask(Subtask subtask) {
@@ -224,11 +230,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             return;
         }
 
-        int id = subtask.getId();
-        subtask.setId(id);
-        subtasks.put(id, subtask);
+        if (uid < subtask.getId()) {
+            uid = subtask.getId();
+        }
+        final int subtaskId = uid;
+        subtask.setId(subtaskId);
+        subtasks.put(subtaskId, subtask);
 
-        epic.addSubtaskId(id);
+        epic.addSubtaskId(subtaskId);
         updateEpicStatus(epic);
     }
 

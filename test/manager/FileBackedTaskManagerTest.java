@@ -37,7 +37,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         Task task1 = new Task("t1", "id_1", TaskStatus.NEW);
         final int taskId1 = taskManager.createTask(task1);
         Task task2 = new Task("t2", "id_2", TaskStatus.IN_PROGRESS);
-        final int taskId2 = taskManager.createTask(task2);
+        taskManager.createTask(task2);
 
         // создать один эпик с двумя подзадачами
         Epic epic1 = new Epic("e1", "id_3", TaskStatus.NEW);
@@ -47,14 +47,14 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         final int subtaskId1 = taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("e1_s2", "id_5",
                 TaskStatus.NEW, epicId1);
-        final int subtaskId2 = taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
         // создать один эпик с одной подзадачей
         Epic epic2 = new Epic("e2", "id_6", TaskStatus.NEW);
         final int epicId2 = taskManager.createEpic(epic2);
         Subtask subtask3 = new Subtask("e1_s3", "id_7",
                 TaskStatus.NEW, epicId2);
-        final int subtaskId3 = taskManager.createSubtask(subtask3);
+        taskManager.createSubtask(subtask3);
 
         taskManager.getTask(taskId1);
         taskManager.getEpic(epicId1);
@@ -113,16 +113,16 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     @Test
     void test25_loadWithEmptyHistory() {
         Task task = new Task("task", "task", TaskStatus.NEW);
-        final int taskId = taskManager.createTask(task);
+        taskManager.createTask(task);
 
         Epic epic = new Epic("epic", "epic", TaskStatus.NEW);
         final int epicId = taskManager.createEpic(epic);
         Subtask subtask1 = new Subtask("e1_s1", "id_4",
                 TaskStatus.NEW, epicId);
-        final int subtaskId1 = taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("e1_s2", "id_5",
                 TaskStatus.NEW, epicId);
-        final int subtaskId2 = taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
         taskManager.getHistory();
 
@@ -143,5 +143,28 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(task, tasks.get(0), "Задачи не равны.");
         assertEquals(epic, epics.get(0), "Эпики не равны.");
         assertEquals(subtask1, subtasks.get(0), "Подзадачи не равны.");
+    }
+
+    @Test
+    void test26_CheckIdCreatedTaskAfterLoadFromFile() {
+        Task task = new Task("task", "task", TaskStatus.NEW);
+        taskManager.createTask(task);
+
+        Epic epic = new Epic("epic", "epic", TaskStatus.NEW);
+        final int epicId = taskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("subtask1", "subtask1",
+                TaskStatus.NEW, epicId);
+        taskManager.createSubtask(subtask1);
+        Subtask subtask2 = new Subtask("subtask2", "subtask2",
+                TaskStatus.NEW, epicId);
+        taskManager.createSubtask(subtask2);
+
+        FileBackedTaskManager loadTaskManager = FileBackedTaskManager.loadFromFile(file);
+
+        Task task2 = new Task("task2", "task2", TaskStatus.NEW);
+        loadTaskManager.createTask(task2);
+        final int task2Id = task2.getId();
+
+        assertEquals(5, task2Id, "Неверный ID задачи");
     }
 }
