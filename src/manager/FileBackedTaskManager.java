@@ -159,7 +159,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 epic.setId(id);
                 return epic;
             case SUBTASK:
-                Subtask subtask = new Subtask(values[2], values[4], TaskStatus.valueOf(values[3]), Integer.parseInt(values[5]));
+                Subtask subtask = new Subtask(values[2], values[4], TaskStatus.valueOf(values[3]),
+                        Integer.parseInt(values[5]));
                 subtask.setId(id);
                 return subtask;
             default:
@@ -193,8 +194,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      * @return список id задач из истории
      */
     private static List<Integer> historyFromString(String value) {
-        String[] historyId = value.split(",");
         List<Integer> history = new ArrayList<>();
+        if (value == null) {
+            return history;
+        }
+        String[] historyId = value.split(",");
         for (String id : historyId) {
             history.add(Integer.valueOf(id));
         }
@@ -239,6 +243,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line = reader.readLine();
+            if (line == null) {
+                return taskManager;
+            }
             while (!line.isBlank()) {
                 if (line.startsWith("id")) {
                     line = reader.readLine();
@@ -289,41 +296,4 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return taskManager;
     }
 
-    public static void main(String[] args) {
-
-        FileBackedTaskManager taskManager = new FileBackedTaskManager(new File("resources/tasks.csv"));
-
-        // создать две задачи
-        Task task1 = new Task("t1", "id_1", TaskStatus.NEW);
-        Task task2 = new Task("t2", "id_2", TaskStatus.IN_PROGRESS);
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-
-        // создать один эпик с двумя подзадачами
-        Epic epic1 = new Epic("e1", "id_3", TaskStatus.NEW);
-        Subtask subtask1 = new Subtask("e1_s1", "id_4",
-                TaskStatus.NEW, 3);
-        Subtask subtask2 = new Subtask("e1_s2", "id_5",
-                TaskStatus.NEW, 3);
-        Subtask subtask3 = new Subtask("e1_s3", "id_6",
-                TaskStatus.NEW, 3);
-        taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1);
-        taskManager.createSubtask(subtask2);
-        taskManager.createSubtask(subtask3);
-
-        // создать один эпик с одной подзадачей
-        Epic epic2 = new Epic("e2", "id_7", TaskStatus.NEW);
-        taskManager.createEpic(epic2);
-
-        taskManager.getTask(1);
-        taskManager.getEpic(3);
-        taskManager.getSubtask(4);
-
-        taskManager.getHistory();
-
-        FileBackedTaskManager fileBackedTaskManager = loadFromFile(new File("resources/tasks.csv"));
-        System.out.println("все задачи:" + fileBackedTaskManager);
-        System.out.println("история:" + fileBackedTaskManager.getHistory());
-    }
 }
