@@ -1,5 +1,7 @@
 package task;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -8,10 +10,21 @@ public class Task {
     private int id;
     private TaskStatus status;
 
+    protected long duration;              // продолжительность задачи в минутах
+    protected LocalDateTime startTime;    // дата, когда предполагается приступить к выполнению задачи
+
     public Task(String name, String description, TaskStatus status) {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public Task(String name, String description, TaskStatus status, long duration, LocalDateTime startTime) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public String getName() {
@@ -46,12 +59,38 @@ public class Task {
         this.description = description;
     }
 
+    public long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null) {
+            return startTime.plusMinutes(duration);
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description) && status == task.status;
+        return id == task.id &&
+                Objects.equals(name, task.name) &&
+                Objects.equals(description, task.description) &&
+                status == task.status;
     }
 
     @Override
@@ -61,11 +100,21 @@ public class Task {
 
     @Override
     public String toString() {
-        return "tasks.Task{" +
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+        String result;
+        result = "Task{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", ID=" + id +
-                ", status='" + status + '\'' +
-                '}';
+                ", id=" + id +
+                ", status=" + status;
+        if (startTime != null) {
+            result += ", duration=" + '\'' + duration + '\'' +
+                    ", startTime=" + '\'' + startTime.format(formatter) + '\'' +
+                    ", endTime=" + '\'' + getEndTime().format(formatter) + '\'' +
+                    "}";
+        } else {
+            result += ", duration=" + '\'' + null + '\'' + ", startTime=" + '\'' + null + '\'' + "}";
+        }
+        return result;
     }
 }

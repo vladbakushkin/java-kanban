@@ -1,5 +1,7 @@
 package task;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Subtask extends Task {
@@ -8,6 +10,11 @@ public class Subtask extends Task {
 
     public Subtask(String name, String description, TaskStatus status, int epicId) {
         super(name, description, status);
+        this.epicId = epicId;
+    }
+
+    public Subtask(String name, String description, TaskStatus status, int epicId, long duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -31,12 +38,22 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "tasks.Subtask{" +
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+        String result;
+        result = "tasks.Subtask{" +
                 "name='" + super.getName() + '\'' +
                 ", description='" + super.getDescription() + '\'' +
                 ", ID=" + super.getId() +
                 ", status='" + super.getStatus() + '\'' +
-                ", epicId='" + epicId + '\'' +
-                '}';
+                ", epicId='" + epicId + '\'';
+        if (startTime != null) {
+            result += ", duration=" + '\'' + duration + '\'' +
+                    ", startTime=" + '\'' + startTime.format(formatter) + '\'' +
+                    ", endTime=" + '\'' + getEndTime().format(formatter) + '\'' +
+                    "}";
+        } else {
+            result += ", duration=" + '\'' + null + '\'' + ", startTime=" + '\'' + null + '\'' + "}";
+        }
+        return result;
     }
 }

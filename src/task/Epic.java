@@ -1,11 +1,15 @@
 package task;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
 
-    private ArrayList<Integer> subtasksId;
+    private final ArrayList<Integer> subtasksId;
+
+    private LocalDateTime endTime;
 
     public Epic(String name, String description, TaskStatus status) {
         super(name, description, status);
@@ -28,6 +32,14 @@ public class Epic extends Task {
         subtasksId.remove((Integer) id);
     }
 
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -45,15 +57,24 @@ public class Epic extends Task {
     @Override
     public String toString() {
         String result;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
         result = "tasks.Epic{" +
                 "name='" + super.getName() + '\'' +
                 ", description='" + super.getDescription() + '\'' +
                 ", ID=" + super.getId() +
                 ", status='" + super.getStatus() + '\'';
         if (subtasksId != null) {
-            result += ", QTY ST=" + subtasksId.size() + "}";
+            result += ", QTY ST=" + subtasksId.size();
         } else {
-            result += ", QTY ST=0}";
+            result += ", QTY ST=0";
+        }
+        if (startTime != null) {
+            result += ", duration=" + '\'' + duration + '\'' +
+                    ", startTime=" + '\'' + startTime.format(formatter) + '\'' +
+                    ", endTime=" + '\'' + getEndTime().format(formatter) + '\'' +
+                    "}";
+        } else {
+            result += ", duration=" + '\'' + null + '\'' + ", startTime=" + '\'' + null + '\'' + "}";
         }
         return result;
     }
