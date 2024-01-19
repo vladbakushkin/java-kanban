@@ -222,10 +222,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(subtask2, prioritizedTasks.get(5), "Неверный порядок в prioritizedTasks.");
         assertEquals(task2, prioritizedTasks.get(6), "Неверный порядок в prioritizedTasks.");
 
-        for (Task prioritizedTask : prioritizedTasks) {
-            System.out.println(prioritizedTask);
-        }
-
         assertEquals(task1, tasks.get(0), "Задачи не равны.");
         assertEquals(epic1, epics.get(0), "Эпики не равны.");
         assertEquals(subtask1, subtasks.get(0), "Подзадачи не равны.");
