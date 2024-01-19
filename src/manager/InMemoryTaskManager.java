@@ -108,7 +108,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int createTask(Task newTask) {
         if (newTask.getStartTime() != null) {
             for (Task task : prioritizedTasks.keySet()) {
-                if (task.getClass() == Epic.class) {
+                if (task.getClass() == Epic.class || task.getStartTime() == null) {
                     continue;
                 }
                 if ((newTask.getStartTime().isAfter(task.getStartTime()) && newTask.getStartTime().isBefore(task.getEndTime())) ||
@@ -145,7 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (newSubtask.getStartTime() != null) {
             for (Task task : prioritizedTasks.keySet()) {
-                if (task.getClass() == Epic.class) {
+                if (task.getClass() == Epic.class || task.getStartTime() == null) {
                     continue;
                 }
                 if ((newSubtask.getStartTime().isAfter(task.getStartTime()) && newSubtask.getStartTime().isBefore(task.getEndTime())) ||
@@ -285,7 +285,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         if (!(epic.getSubtasksId().isEmpty())) {
             firstSubtask = getSubtask(epic.getSubtasksId().get(0));
-
+            historyManager.remove(firstSubtask.getId());
             startTime = firstSubtask.getStartTime();
             endTime = firstSubtask.getEndTime();
 
