@@ -520,4 +520,21 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals(subtask1.getStartTime(), epic1.getStartTime(), "Неверное время начала у эпика");
     }
+
+    @Test
+    void test30_calculateEpicStartTimeWhenSubtaskNotInRow() {
+        LocalDateTime now = LocalDateTime.now();
+
+        Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
+        final int epic1Id = taskManager.createEpic(epic1);
+
+        Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.IN_PROGRESS, epic1Id,
+                15, now);
+        taskManager.createSubtask(subtask1);
+        Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.IN_PROGRESS,
+                epic1Id, 15, now.plusMinutes(30));
+        taskManager.createSubtask(subtask2);
+
+        assertEquals(30, epic1.getDuration().toMinutes(), "Неверная продолжительность эпика.");
+    }
 }
