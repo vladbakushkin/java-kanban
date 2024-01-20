@@ -144,7 +144,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         if (task.getStartTime() != null) {
-            result.append(",").append(task.getDuration()).append(",").append(task.getStartTime().format(formatter));
+            result.append(",").append(task.getDuration().toMinutes()).append(",").append(task.getStartTime().format(formatter));
         }
         result.append("\n");
         return result.toString();

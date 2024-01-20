@@ -1,5 +1,6 @@
 package task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -10,7 +11,7 @@ public class Task {
     private int id;
     private TaskStatus status;
 
-    protected long duration;              // продолжительность задачи в минутах
+    protected Duration duration;              // продолжительность задачи в минутах
     protected LocalDateTime startTime;    // дата, когда предполагается приступить к выполнению задачи
 
     public Task(String name, String description, TaskStatus status) {
@@ -23,7 +24,7 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.duration = duration;
+        this.duration = Duration.ofMinutes(duration);
         this.startTime = startTime;
     }
 
@@ -59,11 +60,11 @@ public class Task {
         this.description = description;
     }
 
-    public long getDuration() {
+    public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(long duration) {
+    public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
@@ -77,7 +78,7 @@ public class Task {
 
     public LocalDateTime getEndTime() {
         if (startTime != null) {
-            return startTime.plusMinutes(duration);
+            return startTime.plus(duration);
         }
         return null;
     }
@@ -108,7 +109,7 @@ public class Task {
                 ", id=" + id +
                 ", status=" + status;
         if (startTime != null) {
-            result += ", duration=" + '\'' + duration + '\'' +
+            result += ", duration=" + '\'' + duration.toMinutes() + '\'' +
                     ", startTime=" + '\'' + startTime.format(formatter) + '\'' +
                     ", endTime=" + '\'' + getEndTime().format(formatter) + '\'' +
                     "}";

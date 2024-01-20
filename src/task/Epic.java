@@ -69,7 +69,7 @@ public class Epic extends Task {
             result += ", QTY ST=0";
         }
         if (startTime != null) {
-            result += ", duration=" + '\'' + duration + '\'' +
+            result += ", duration=" + '\'' + duration.toMinutes() + '\'' +
                     ", startTime=" + '\'' + startTime.format(formatter) + '\'' +
                     ", endTime=" + '\'' + getEndTime().format(formatter) + '\'' +
                     "}";

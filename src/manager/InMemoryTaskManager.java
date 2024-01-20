@@ -5,6 +5,7 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -257,7 +258,7 @@ public class InMemoryTaskManager implements TaskManager {
         prioritizedTasks.remove(epic);
 
         LocalDateTime startTime = null;
-        long duration = 0;
+        Duration duration = null;
         LocalDateTime endTime = null;
 
         Subtask firstSubtask;
@@ -270,13 +271,14 @@ public class InMemoryTaskManager implements TaskManager {
 
             for (Subtask subtask : subtasks.values()) {
                 if (subtask.getStartTime() != null) {
+                    duration = subtask.getDuration();
                     if (subtask.getStartTime().isBefore(startTime)) {
                         startTime = subtask.getStartTime();
                     }
                     if (subtask.getEndTime().isAfter(endTime)) {
                         endTime = subtask.getEndTime();
                     }
-                    duration += subtask.getDuration();
+                    duration = duration.plus(subtask.getDuration());
                 }
             }
         }
