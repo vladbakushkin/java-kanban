@@ -13,6 +13,8 @@ public interface TaskManager {
 
     List<Subtask> getSubtasks();
 
+    List<Task> getPrioritizedTasks();
+
     void deleteTasks();
 
     void deleteEpics();

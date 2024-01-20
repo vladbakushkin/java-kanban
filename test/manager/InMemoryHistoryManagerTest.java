@@ -15,7 +15,7 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void setUp() {
-        historyManager = new InMemoryHistoryManager();
+        historyManager = Managers.getDefaultHistory();
     }
 
     @Test

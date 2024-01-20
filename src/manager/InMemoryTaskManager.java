@@ -20,7 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected int uid = 0;
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public List<Task> getTasks() {
@@ -132,6 +132,7 @@ public class InMemoryTaskManager implements TaskManager {
         int epicId = ++uid;
         newEpic.setId(epicId);
         epics.put(epicId, newEpic);
+        updateEpicStatus(newEpic);
         prioritizedTasks.put(newEpic, newEpic.getStartTime());
         return epicId;
     }
@@ -241,36 +242,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     protected void updateEpicStatus(Epic epic) {
-        List<TaskStatus> statuses = new ArrayList<>();
+        List<Integer> epicSubtasksId = epic.getSubtasksId();
+        List<Subtask> epicSubtasks = new ArrayList<>();
 
-        for (Subtask subtask : subtasks.values()) {
-            if (subtask.getEpicId() == epic.getId()) {
-                statuses.add(subtask.getStatus());
-            }
+        for (Integer subtaskId : epicSubtasksId) {
+            epicSubtasks.add(subtasks.get(subtaskId));
         }
 
-        if (statuses.isEmpty()) {
-            epic.setStatus(TaskStatus.NEW);
-        }
-
-        int countNew = 0;
-        int countDone = 0;
-        for (TaskStatus status : statuses) {
-            if (status.equals(TaskStatus.NEW)) {
-                countNew++;
-            }
-            if (status.equals(TaskStatus.DONE)) {
-                countDone++;
-            }
-        }
-
-        if (countNew == statuses.size()) {
-            epic.setStatus(TaskStatus.NEW);
-        } else if (countDone == statuses.size()) {
-            epic.setStatus(TaskStatus.DONE);
-        } else {
-            epic.setStatus(TaskStatus.IN_PROGRESS);
-        }
+        epic.setStatus(InMemoryTaskManager.calculateStatus(epicSubtasks));
     }
 
     protected void updateEpicTime(Epic epic) {
@@ -311,6 +290,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected HistoryManager getHistoryManager() {
         return historyManager;
+    }
+
+    public static TaskStatus calculateStatus(List<Subtask> subtasks) {
+        if (subtasks.isEmpty()) {
+            return TaskStatus.NEW;
+        }
+
+        int countNew = 0;
+        int countDone = 0;
+        for (Subtask subtask : subtasks) {
+            if (subtask.getStatus().equals(TaskStatus.NEW)) {
+                countNew++;
+            }
+            if (subtask.getStatus().equals(TaskStatus.DONE)) {
+                countDone++;
+            }
+        }
+
+        if (countNew == subtasks.size()) {
+            return TaskStatus.NEW;
+        } else if (countDone == subtasks.size()) {
+            return TaskStatus.DONE;
+        } else {
+            return TaskStatus.IN_PROGRESS;
+        }
     }
 
     @Override

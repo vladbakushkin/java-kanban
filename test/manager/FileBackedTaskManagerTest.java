@@ -33,7 +33,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void test22_loadFromFile() {
+    void test29_loadFromFile() {
         // создать две задачи
         Task task1 = new Task("t1", "id_1", TaskStatus.NEW);
         final int taskId1 = taskManager.createTask(task1);
@@ -83,7 +83,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void test23_loadWithEmptyTasks() {
+    void test30_loadWithEmptyTasks() {
         FileBackedTaskManager loadTaskManager = FileBackedTaskManager.loadFromFile(file);
 
         List<Task> tasks = loadTaskManager.getTasks();
@@ -96,7 +96,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void test24_loadWithEpicWithoutSubtasks() {
+    void test31_loadWithEpicWithoutSubtasks() {
         Epic epic = new Epic("epic", "epicDescription", TaskStatus.NEW);
         final int epicId = taskManager.createEpic(epic);
 
@@ -112,7 +112,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void test25_loadWithEmptyHistory() {
+    void test32_loadWithEmptyHistory() {
         Task task = new Task("task", "task", TaskStatus.NEW);
         taskManager.createTask(task);
 
@@ -147,7 +147,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void test26_CheckIdCreatedTaskAfterLoadFromFile() {
+    void test33_CheckIdCreatedTaskAfterLoadFromFile() {
         Task task = new Task("task", "task", TaskStatus.NEW);
         taskManager.createTask(task);
 
@@ -170,7 +170,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     }
 
     @Test
-    void test27_loadFromFileWithTimes() {
+    void test34_loadFromFileWithTimes() {
         Task task1 = new Task("task1", "task1", TaskStatus.NEW, 60, LocalDateTime.now());
         final int taskId1 = taskManager.createTask(task1);
         Task task2 = new Task("task2", "task2", TaskStatus.IN_PROGRESS);
