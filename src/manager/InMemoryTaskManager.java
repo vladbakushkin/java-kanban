@@ -182,6 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
     public int updateEpic(Epic epic) {
         epics.put(epic.getId(), epic);
         prioritizedTasks.put(epic, epic.getStartTime());
+        updateEpicTime(epic);
         return epic.getId();
     }
 
@@ -261,15 +262,19 @@ public class InMemoryTaskManager implements TaskManager {
         Duration duration = null;
         LocalDateTime endTime = null;
 
-        Subtask firstSubtask;
-
         if (!(epic.getSubtasksId().isEmpty())) {
-            firstSubtask = getSubtask(epic.getSubtasksId().get(0));
-            historyManager.remove(firstSubtask.getId());
+            Subtask firstSubtask = subtasks.get(epic.getSubtasksId().get(0));
             startTime = firstSubtask.getStartTime();
             endTime = firstSubtask.getEndTime();
 
-            for (Subtask subtask : subtasks.values()) {
+            List<Integer> epicSubtasksId = epic.getSubtasksId();
+            List<Subtask> epicSubtasks = new ArrayList<>();
+
+            for (Integer subtaskId : epicSubtasksId) {
+                epicSubtasks.add(subtasks.get(subtaskId));
+            }
+
+            for (Subtask subtask : epicSubtasks) {
                 if (subtask.getStartTime() != null) {
                     duration = subtask.getDuration();
                     if (subtask.getStartTime().isBefore(startTime)) {

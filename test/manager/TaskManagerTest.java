@@ -469,27 +469,25 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
         final int epicId = taskManager.createEpic(epic1);
 
-        Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.IN_PROGRESS, epicId, 60, now.plusMinutes(120));
+        Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.IN_PROGRESS, epicId,
+                60, now.plusMinutes(120));
         taskManager.createSubtask(subtask1);
 
-        Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.IN_PROGRESS, epicId, 60, now.plusMinutes(60));
+        Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.IN_PROGRESS, epicId,
+                60, now.plusMinutes(60));
         taskManager.createSubtask(subtask2);
 
         Epic epic2 = new Epic("epic2", "epic2", TaskStatus.NEW);
         final int epicId2 = taskManager.createEpic(epic2);
 
-        Subtask subtask5 = new Subtask("subtask5", "subtask5", TaskStatus.IN_PROGRESS, epicId2, 60, now.plusMinutes(120));
+        Subtask subtask5 = new Subtask("subtask5", "subtask5", TaskStatus.IN_PROGRESS, epicId2,
+                60, now.plusMinutes(120));
         taskManager.createSubtask(subtask5);
 
         Task task5 = new Task("task5", "task5", TaskStatus.NEW, 60, now.minusMinutes(60));
         taskManager.createTask(task5);
 
         List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
-
-        System.out.println();
-        for (Task prioritizedTask : prioritizedTasks) {
-            System.out.println(prioritizedTask);
-        }
 
         assertEquals(6, prioritizedTasks.size(), "Неверное количество задач.");
         assertEquals(task5, prioritizedTasks.get(0), "Неверный порядок задач в списке.");
@@ -498,5 +496,28 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(epic1, prioritizedTasks.get(3), "Неверный порядок задач в списке.");
         assertEquals(subtask1, prioritizedTasks.get(4), "Неверный порядок задач в списке.");
         assertEquals(epic2, prioritizedTasks.get(5), "Неверный порядок задач в списке.");
+    }
+
+    @Test
+    void test29_updateEpicTimeWhenDeleteSubtask() {
+        LocalDateTime now = LocalDateTime.now();
+        Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
+        final int epic1Id = taskManager.createEpic(epic1);
+
+        Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.IN_PROGRESS, epic1Id,
+                60, now.plusMinutes(60));
+        taskManager.createSubtask(subtask1);
+        Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.IN_PROGRESS,
+                epic1Id, 60, now.minusMinutes(60));
+        final int subtask2Id = taskManager.createSubtask(subtask2);
+
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+
+        assertEquals(3, prioritizedTasks.size(), "Неверное количество задач.");
+
+        epic1.removeSubtaskId(subtask2Id);
+        taskManager.updateEpic(epic1);
+
+        assertEquals(subtask1.getStartTime(), epic1.getStartTime(), "Неверное время начала у эпика");
     }
 }
