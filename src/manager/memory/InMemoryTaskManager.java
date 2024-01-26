@@ -110,17 +110,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int createTask(Task newTask) {
-        if (newTask.getStartTime() != null) {
-            for (Task task : prioritizedTasks.keySet()) {
-                if (task.getClass() == Epic.class || task.getStartTime() == null) {
-                    continue;
-                }
-                if ((newTask.getStartTime().isAfter(task.getStartTime()) && newTask.getStartTime().isBefore(task.getEndTime())) ||
-                        newTask.getStartTime().isEqual(task.getStartTime())) {
-                    System.out.println("Задачи пересекаются по времени. Задача не создана.");
-                    return -1;
-                }
-            }
+        if (isCrossOverInTime(newTask)) {
+            return -1;
         }
 
         int taskId = ++uid;
@@ -148,17 +139,8 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("epic == null");
             return -1;
         }
-        if (newSubtask.getStartTime() != null) {
-            for (Task task : prioritizedTasks.keySet()) {
-                if (task.getClass() == Epic.class || task.getStartTime() == null) {
-                    continue;
-                }
-                if ((newSubtask.getStartTime().isAfter(task.getStartTime()) && newSubtask.getStartTime().isBefore(task.getEndTime())) ||
-                        newSubtask.getStartTime().isEqual(task.getStartTime())) {
-                    System.out.println("Подзадачи пересекаются по времени. Подзадача не создана.");
-                    return -1;
-                }
-            }
+        if (isCrossOverInTime(newSubtask)) {
+            return -1;
         }
 
         int subtaskId = ++uid;
@@ -325,6 +307,22 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             return TaskStatus.IN_PROGRESS;
         }
+    }
+
+    private boolean isCrossOverInTime(Task newTask) {
+        if (newTask.getStartTime() != null) {
+            for (Task task : prioritizedTasks.keySet()) {
+                if (task.getClass() == Epic.class || task.getStartTime() == null) {
+                    continue;
+                }
+                if ((newTask.getStartTime().isAfter(task.getStartTime()) && newTask.getStartTime().isBefore(task.getEndTime())) ||
+                        newTask.getStartTime().isEqual(task.getStartTime())) {
+                    System.out.println("Задачи пересекаются по времени. Задача не создана.");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
