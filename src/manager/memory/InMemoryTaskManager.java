@@ -48,28 +48,15 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTasks() {
         tasks.clear();
-
-        for (Task task : prioritizedTasks.keySet()) {
-            if (task.getClass() == Task.class) {
-                prioritizedTasks.remove(task);
-            }
-        }
+        prioritizedTasks.keySet().removeIf(task -> task.getClass() == Task.class);
     }
 
     @Override
     public void deleteEpics() {
         epics.clear();
         subtasks.clear();
-        for (Task task : prioritizedTasks.keySet()) {
-            if (task.getClass() == Subtask.class) {
-                prioritizedTasks.remove(task);
-            }
-        }
-        for (Task task : prioritizedTasks.keySet()) {
-            if (task.getClass() == Epic.class) {
-                prioritizedTasks.remove(task);
-            }
-        }
+        prioritizedTasks.keySet().removeIf(task -> task.getClass() == Subtask.class);
+        prioritizedTasks.keySet().removeIf(task -> task.getClass() == Epic.class);
     }
 
     @Override
@@ -79,12 +66,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.getValue().clearSubtasksId();
             epic.getValue().setStatus(TaskStatus.NEW);
         }
-
-        for (Task task : prioritizedTasks.keySet()) {
-            if (task.getClass() == Subtask.class) {
-                prioritizedTasks.remove(task);
-            }
-        }
+        prioritizedTasks.keySet().removeIf(task -> task.getClass() == Subtask.class);
     }
 
     @Override

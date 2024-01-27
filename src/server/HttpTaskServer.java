@@ -20,6 +20,10 @@ public class HttpTaskServer {
     private final HttpServer server;
     private final Gson gson;
 
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
     private final TaskManager taskManager;
 
     public HttpTaskServer() throws IOException {
@@ -33,7 +37,7 @@ public class HttpTaskServer {
         server.createContext("/tasks", this::handler);
     }
 
-    private void handler(HttpExchange httpExchange) throws IOException {
+    private void handler(HttpExchange httpExchange) {
         try {
             System.out.println("\n/tasks");
             String path = httpExchange.getRequestURI().getPath().substring(7);
@@ -50,7 +54,7 @@ public class HttpTaskServer {
                 case "epic":
                     handleEpic(httpExchange);
                     break;
-                case "subtask/epic/":
+                case "subtask/epic":
                     if (!httpExchange.getRequestMethod().equals("GET")) {
                         System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
                         httpExchange.sendResponseHeaders(405, 0);
@@ -80,6 +84,8 @@ public class HttpTaskServer {
                     sendText(httpExchange, response);
                     break;
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         } finally {
             httpExchange.close();
         }
@@ -89,6 +95,11 @@ public class HttpTaskServer {
         System.out.println("Запускаем сервер на порту " + PORT);
         System.out.println("Открой в браузере http://localhost:" + PORT + "/");
         server.start();
+    }
+
+    public void stop() {
+        server.stop(0);
+        System.out.println("Остановили сервер на порту " + PORT);
     }
 
     protected String readText(HttpExchange h) throws IOException {
@@ -131,7 +142,7 @@ public class HttpTaskServer {
                 }
                 taskId = Integer.parseInt(query.substring(3));
                 taskManager.deleteTask(taskId);
-                System.out.println("Удалили задачу, subtaskId = " + taskId);
+                System.out.println("Удалили задачу, taskId = " + taskId);
                 httpExchange.sendResponseHeaders(200, 0);
                 break;
             case "POST":
@@ -263,9 +274,5 @@ public class HttpTaskServer {
                 }
                 break;
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-        new HttpTaskServer().start();
     }
 }

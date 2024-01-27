@@ -80,9 +80,4 @@ public class KVTaskClient {
             throw new ManagerSaveException("Ошибка в отправке ответа.");
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        new KVServer().start();
-        new KVTaskClient("http://localhost:8080/register/");
-    }
 }
