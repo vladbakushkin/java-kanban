@@ -43,7 +43,7 @@ public class KVServer {
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
-                if (data.containsKey(key)) {
+                if (!data.containsKey(key)) {
                     System.out.println("Ключ " + key + " отсутствует.");
                     h.sendResponseHeaders(404, 0);
                     return;
@@ -132,9 +132,5 @@ public class KVServer {
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
         h.getResponseBody().write(resp);
-    }
-
-    public static void main(String[] args) throws IOException {
-        new KVServer().start();
     }
 }
