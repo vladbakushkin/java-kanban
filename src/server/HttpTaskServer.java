@@ -42,8 +42,6 @@ public class HttpTaskServer {
             System.out.println("\n/tasks");
             String path = httpExchange.getRequestURI().getPath().substring(7);
 
-            String response;
-
             switch (path) {
                 case "task":
                     handleTask(httpExchange);
@@ -55,33 +53,13 @@ public class HttpTaskServer {
                     handleEpic(httpExchange);
                     break;
                 case "subtask/epic":
-                    if (!httpExchange.getRequestMethod().equals("GET")) {
-                        System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
-                        httpExchange.sendResponseHeaders(405, 0);
-                    }
-                    String query = httpExchange.getRequestURI().getQuery();
-                    final int epicId = Integer.parseInt(query.substring(3));
-                    response = gson.toJson(taskManager.getSubtasksFromEpic(epicId));
-                    System.out.println("Получили все subtasks эпика, epicId = " + epicId);
-                    sendText(httpExchange, response);
+                    handleEpicSubtasks(httpExchange);
                     break;
                 case "history":
-                    if (!httpExchange.getRequestMethod().equals("GET")) {
-                        System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
-                        httpExchange.sendResponseHeaders(405, 0);
-                    }
-                    response = gson.toJson(taskManager.getHistory());
-                    System.out.println("Получили историю задач.");
-                    sendText(httpExchange, response);
+                    handleHistory(httpExchange);
                     break;
                 case "":
-                    if (!httpExchange.getRequestMethod().equals("GET")) {
-                        System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
-                        httpExchange.sendResponseHeaders(405, 0);
-                    }
-                    response = gson.toJson(taskManager.getPrioritizedTasks());
-                    System.out.println("Получили все задачи.");
-                    sendText(httpExchange, response);
+                    handleAllTasks(httpExchange);
                     break;
             }
         } catch (IOException e) {
@@ -274,5 +252,37 @@ public class HttpTaskServer {
                 }
                 break;
         }
+    }
+
+    private void handleEpicSubtasks(HttpExchange httpExchange) throws IOException {
+        if (!httpExchange.getRequestMethod().equals("GET")) {
+            System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
+            httpExchange.sendResponseHeaders(405, 0);
+        }
+        String query = httpExchange.getRequestURI().getQuery();
+        final int epicId = Integer.parseInt(query.substring(3));
+        String response = gson.toJson(taskManager.getSubtasksFromEpic(epicId));
+        System.out.println("Получили все subtasks эпика, epicId = " + epicId);
+        sendText(httpExchange, response);
+    }
+
+    private void handleHistory(HttpExchange httpExchange) throws IOException {
+        if (!httpExchange.getRequestMethod().equals("GET")) {
+            System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
+            httpExchange.sendResponseHeaders(405, 0);
+        }
+        String response = gson.toJson(taskManager.getHistory());
+        System.out.println("Получили историю задач.");
+        sendText(httpExchange, response);
+    }
+
+    private void handleAllTasks(HttpExchange httpExchange) throws IOException {
+        if (!httpExchange.getRequestMethod().equals("GET")) {
+            System.out.println("/ ждет GET-запрос, а получил: " + httpExchange.getRequestMethod());
+            httpExchange.sendResponseHeaders(405, 0);
+        }
+        String response = gson.toJson(taskManager.getPrioritizedTasks());
+        System.out.println("Получили все задачи.");
+        sendText(httpExchange, response);
     }
 }
