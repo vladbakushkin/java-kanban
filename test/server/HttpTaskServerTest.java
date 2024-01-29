@@ -29,12 +29,13 @@ class HttpTaskServerTest {
     private HttpTaskServer taskServer;
     private KVServer kvServer;
     private final Gson gson = Managers.getGson();
+    TaskManager taskManager;
 
     @BeforeEach
     void setUp() throws IOException {
         kvServer = new KVServer();
         kvServer.start();
-        TaskManager taskManager = Managers.getDefault();
+        taskManager = Managers.getDefault();
         taskServer = new HttpTaskServer(taskManager);
         taskServer.start();
     }
@@ -48,7 +49,7 @@ class HttpTaskServerTest {
     @Test
     void test1_getAllTasks() throws IOException, InterruptedException {
         Task task1 = new Task("task1", "task1", TaskStatus.NEW);
-        taskServer.getTaskManager().createTask(task1);
+        taskManager.createTask(task1);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/task");
@@ -69,7 +70,7 @@ class HttpTaskServerTest {
     @Test
     void test2_getTaskById() throws IOException, InterruptedException {
         Task task1 = new Task("task1", "task1", TaskStatus.NEW);
-        taskServer.getTaskManager().createTask(task1);
+        taskManager.createTask(task1);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/task?id=1");
@@ -113,7 +114,7 @@ class HttpTaskServerTest {
     @Test
     void test4_updateTask() throws IOException, InterruptedException {
         Task task1 = new Task("task1", "task1", TaskStatus.NEW);
-        taskServer.getTaskManager().createTask(task1);
+        taskManager.createTask(task1);
 
         task1.setName("newName");
         String json = gson.toJson(task1);
@@ -139,7 +140,7 @@ class HttpTaskServerTest {
     @Test
     void test5_deleteTaskById() throws IOException, InterruptedException {
         Task task1 = new Task("task1", "task1", TaskStatus.NEW);
-        taskServer.getTaskManager().createTask(task1);
+        taskManager.createTask(task1);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/task?id=1");
@@ -148,15 +149,15 @@ class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код статуса.");
 
-        assertTrue(taskServer.getTaskManager().getTasks().isEmpty(), "Список задач не пустой");
+        assertTrue(taskManager.getTasks().isEmpty(), "Список задач не пустой");
     }
 
     @Test
     void test6_deleteTasks() throws IOException, InterruptedException {
         Task task1 = new Task("task1", "task1", TaskStatus.NEW);
-        taskServer.getTaskManager().createTask(task1);
+        taskManager.createTask(task1);
         Task task2 = new Task("task2", "task2", TaskStatus.NEW);
-        taskServer.getTaskManager().createTask(task2);
+        taskManager.createTask(task2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/task");
@@ -165,17 +166,17 @@ class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код статуса.");
 
-        assertTrue(taskServer.getTaskManager().getTasks().isEmpty(), "Список задач не пустой");
+        assertTrue(taskManager.getTasks().isEmpty(), "Список задач не пустой");
     }
 
     @Test
     void test7_getAllSubtasks() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/subtask");
@@ -197,9 +198,9 @@ class HttpTaskServerTest {
     @Test
     void test8_getSubtaskById() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/subtask?id=2");
@@ -219,7 +220,7 @@ class HttpTaskServerTest {
     @Test
     void test9_addSubtask() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
         String json = gson.toJson(subtask1);
         subtask1.setId(2);
@@ -245,9 +246,9 @@ class HttpTaskServerTest {
     @Test
     void test10_updateSubtask() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
 
         subtask1.setName("newNameSubtask");
         String json = gson.toJson(subtask1);
@@ -273,11 +274,11 @@ class HttpTaskServerTest {
     @Test
     void test11_deleteSubtaskById() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/subtask?id=2");
@@ -286,18 +287,18 @@ class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код статуса.");
 
-        assertFalse(taskServer.getTaskManager().getSubtasks().contains(subtask1),
+        assertFalse(taskManager.getSubtasks().contains(subtask1),
                 "Список подзадач содержит subtask1");
     }
 
     @Test
     void test12_deleteSubtasks() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/subtask");
@@ -306,15 +307,15 @@ class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код статуса.");
 
-        assertTrue(taskServer.getTaskManager().getSubtasks().isEmpty(), "Список подзадач не пустой");
+        assertTrue(taskManager.getSubtasks().isEmpty(), "Список подзадач не пустой");
     }
 
     @Test
     void test13_getAllEpics() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        taskServer.getTaskManager().createEpic(epic1);
+        taskManager.createEpic(epic1);
         Epic epic2 = new Epic("epic2", "epic2", TaskStatus.NEW);
-        taskServer.getTaskManager().createEpic(epic2);
+        taskManager.createEpic(epic2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/epic");
@@ -336,7 +337,7 @@ class HttpTaskServerTest {
     @Test
     void test14_getEpicById() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        taskServer.getTaskManager().createEpic(epic1);
+        taskManager.createEpic(epic1);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/epic?id=1");
@@ -382,7 +383,7 @@ class HttpTaskServerTest {
     @Test
     void test16_updateEpic() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        taskServer.getTaskManager().createEpic(epic1);
+        taskManager.createEpic(epic1);
 
         epic1.setName("newNameEpic");
         String json = gson.toJson(epic1);
@@ -408,13 +409,13 @@ class HttpTaskServerTest {
     @Test
     void test17_deleteEpicById() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
         Epic epic2 = new Epic("epic2", "epic2", TaskStatus.NEW);
-        taskServer.getTaskManager().createEpic(epic2);
+        taskManager.createEpic(epic2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/epic?id=1");
@@ -423,21 +424,21 @@ class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код статуса.");
 
-        assertFalse(taskServer.getTaskManager().getEpics().contains(epic1),
+        assertFalse(taskManager.getEpics().contains(epic1),
                 "Список эпиков содержит epic1");
-        assertTrue(taskServer.getTaskManager().getSubtasks().isEmpty(), "Список подзадач эпика не пустой");
+        assertTrue(taskManager.getSubtasks().isEmpty(), "Список подзадач эпика не пустой");
     }
 
     @Test
     void test18_deleteEpics() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
         Epic epic2 = new Epic("epic2", "epic2", TaskStatus.NEW);
-        taskServer.getTaskManager().createEpic(epic2);
+        taskManager.createEpic(epic2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/epic");
@@ -446,17 +447,17 @@ class HttpTaskServerTest {
 
         assertEquals(200, response.statusCode(), "Неверный код статуса.");
 
-        assertTrue(taskServer.getTaskManager().getEpics().isEmpty(), "Список эпиков не пустой");
+        assertTrue(taskManager.getEpics().isEmpty(), "Список эпиков не пустой");
     }
 
     @Test
     void test19_getEpicSubtasks() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask1);
+        taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/subtask/epic?id=1");
@@ -476,14 +477,14 @@ class HttpTaskServerTest {
     @Test
     void test20_getHistory() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id);
-        final int subtask1Id = taskServer.getTaskManager().createSubtask(subtask1);
+        final int subtask1Id = taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id);
-        taskServer.getTaskManager().createSubtask(subtask2);
+        taskManager.createSubtask(subtask2);
 
-        taskServer.getTaskManager().getEpic(epic1Id);
-        taskServer.getTaskManager().getSubtask(subtask1Id);
+        taskManager.getEpic(epic1Id);
+        taskManager.getSubtask(subtask1Id);
 
         HttpClient client = HttpClient.newHttpClient();
         URI url = URI.create("http://localhost:8080/tasks/history");
@@ -504,13 +505,13 @@ class HttpTaskServerTest {
     @Test
     void test21_getTasks() throws IOException, InterruptedException {
         Epic epic1 = new Epic("epic1", "epic1", TaskStatus.NEW);
-        final int epic1Id = taskServer.getTaskManager().createEpic(epic1);
+        final int epic1Id = taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("subtask1", "subtask1", TaskStatus.NEW, epic1Id,
                 15, LocalDateTime.now().plusMinutes(30));
-        final int subtask1Id = taskServer.getTaskManager().createSubtask(subtask1);
+        final int subtask1Id = taskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("subtask2", "subtask2", TaskStatus.NEW, epic1Id,
                 15, LocalDateTime.now());
-        final int subtask2Id = taskServer.getTaskManager().createSubtask(subtask2);
+        final int subtask2Id = taskManager.createSubtask(subtask2);
 
 
         HttpClient client = HttpClient.newHttpClient();
