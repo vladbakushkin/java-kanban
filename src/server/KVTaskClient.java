@@ -15,11 +15,7 @@ public class KVTaskClient {
     private final String apiToken;
 
     public KVTaskClient(String url) {
-        if (url.endsWith("/")) {
-            this.url = url;
-        } else {
-            this.url = url + "/";
-        }
+        this.url = url.endsWith("/") ? url : url + "/";
         this.apiToken = register(this.url);
     }
 
@@ -69,6 +65,7 @@ public class KVTaskClient {
             URI uri = URI.create(url + "save/" + key + "?API_TOKEN=" + apiToken);
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
+                    .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
             HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
